@@ -1,23 +1,42 @@
 import { render } from 'preact';
 import styles from './style.css?inline';
 import { AddressesField } from './AddressesField';
-import { useState } from 'preact/hooks';
+import { useEffect, useState } from 'preact/hooks';
 import { MainTable } from './MainTable';
-import { Page } from './types';
+import { AddressItem, Page } from './types';
 
 export function App() {
-	const [page, setPage] = useState<Page>('Field');
-	const [addresses, setAddresses] = useState<string>('');
+	const [page, setPage] = useState<Page>(localStorage.page || 'Field');
+	const [addresses, setAddresses] = useState<AddressItem[]>(() => {
+		try {
+			return JSON.parse(localStorage.addresses || '[]');
+		} catch {
+			return [];
+		}
+	});
 
-	const onPaste = (newA: string) => {
+	useEffect(() => { localStorage.page = page; }, [page]);
+	useEffect(() => { localStorage.addresses = JSON.stringify(addresses); }, [addresses]);
+
+	const onPaste = (newA: AddressItem[]) => {
 		setAddresses(newA)
 		setPage('Table')
+	}
+
+	function updateItem(id: string, upd: (c: AddressItem) => AddressItem) {
+		setAddresses((c) => c.map((it) => (it.id === id ? upd(it) : it)))
 	}
 
 	return (
 		<div className="KKSearchUI">
 			{page === 'Field' && <AddressesField addresses={addresses} onPaste={onPaste} />}
-			{page === 'Table' && <MainTable addresses={addresses} back={() => setPage('Field')} />}
+			{page === 'Table' && (
+				<MainTable
+					addresses={addresses}
+					back={() => setPage('Field')}
+					updateItem={updateItem}
+				/>
+			)}
 		</div>
 	);
 }

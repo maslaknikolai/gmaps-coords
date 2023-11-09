@@ -42,11 +42,12 @@
 	border: 1px solid white;
 	font-size: 11px;
 	padding: 3px 5px;
+	background: #3ba52a;
 	white-space: nowrap;
 }
 
 .KKSearchUIBtn:hover {
-	background: #3ba52a;
+	background: #1f5c15;
 	color: #ffffff;
 	cursor: pointer;
 }
