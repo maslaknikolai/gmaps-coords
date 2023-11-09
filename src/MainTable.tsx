@@ -40,17 +40,15 @@ export const MainTable = ({
     const lastAutoSearchedIndex = useRef(-1)
 
     const preformAutoSearch = async () => {
-        const nextAddressesWithNoCoordsIndex = addresses.findIndex(it => !it.coords)
+        const nextAddressesWithNoCoordsIndex = addresses.findIndex((it, i) => !it.coords && i > lastAutoSearchedIndex.current)
 
         if (nextAddressesWithNoCoordsIndex === -1) {
             return
         }
 
-        const indexToSearch = Math.max(nextAddressesWithNoCoordsIndex, lastAutoSearchedIndex.current + 1)
-        const addressToSearch = addresses[indexToSearch]
-
-        lastAutoSearchedIndex.current = indexToSearch
-        setHightlightedIndex(indexToSearch)
+        const addressToSearch = addresses[nextAddressesWithNoCoordsIndex]
+        lastAutoSearchedIndex.current = nextAddressesWithNoCoordsIndex
+        setHightlightedIndex(nextAddressesWithNoCoordsIndex)
 
         search(addressToSearch)
 
@@ -82,6 +80,7 @@ export const MainTable = ({
 
     async function searchOne(addressItem: AddressItem) {
         setAutoSearch(false)
+        await sleep(1000)
         const index = addresses.findIndex(it => it.id === addressItem.id)
         setHightlightedIndex(index)
         search(addressItem)
