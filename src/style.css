@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 .id-app-container {
 	height: 60% !important;
 }
@@ -31,7 +35,7 @@
 	width: 100%;
 }
 
-.KKSearchUI__btn {
+.KKSearchUIBtn {
 	border-radius: 0;
 	font-family: monospace;
 	color: #ffffff;
@@ -41,7 +45,7 @@
 	white-space: nowrap;
 }
 
-.KKSearchUI__btn:hover {
+.KKSearchUIBtn:hover {
 	background: #3ba52a;
 	color: #ffffff;
 	cursor: pointer;
