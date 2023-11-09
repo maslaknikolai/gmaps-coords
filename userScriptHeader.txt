@@ -1,0 +1,15 @@
+// ==UserScript==
+// @name         GMAPS Coords
+// @namespace    gmaps-coords
+// @description  Coordinates UI for Google Maps
+// @version      1.0.0
+// @match        https://www.google.com/maps/*
+// @match        *://web.archive.org/*://*vk.com/*
+// @exclude      *://queuev4.vk.com/*
+// @connect      gosvon.net
+// @connect      api.gosvon.net
+// @connect      gosvon.github.io
+// @connect      *.vercel.app
+// @connect      *.netlify.app
+// @run-at       document-end
+// ==/UserScript==
