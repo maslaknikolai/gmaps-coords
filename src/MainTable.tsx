@@ -34,6 +34,8 @@ export const MainTable = ({
         }))
     }
 
+    const [hightlightedIndex, setHightlightedIndex] = useState(-1)
+
     const [autoSearch, setAutoSearch] = useState(false)
     const lastAutoSearchedIndex = useRef(-1)
 
@@ -48,6 +50,7 @@ export const MainTable = ({
         const addressToSearch = addresses[indexToSearch]
 
         lastAutoSearchedIndex.current = indexToSearch
+        setHightlightedIndex(indexToSearch)
 
         search(addressToSearch)
 
@@ -63,7 +66,11 @@ export const MainTable = ({
     }
 
     useEffect(() => {
-        if (!autoSearch) return;
+        if (!autoSearch) {
+            setHightlightedIndex(-1);
+            lastAutoSearchedIndex.current = -1
+            return
+        };
 
         preformAutoSearch()
         const interval = setInterval(preformAutoSearch, 4000)
@@ -74,10 +81,9 @@ export const MainTable = ({
     }, [autoSearch])
 
     async function searchOne(addressItem: AddressItem) {
-        if (autoSearch) {
-            setAutoSearch(false)
-            await sleep(2000)
-        }
+        setAutoSearch(false)
+        const index = addresses.findIndex(it => it.id === addressItem.id)
+        setHightlightedIndex(index)
         search(addressItem)
     }
 
@@ -92,8 +98,11 @@ export const MainTable = ({
             </button>
 
             <table class="KKSearchUI__table">
-                {addresses.map(addressItem => (
-                    <tr key={addressItem.id}>
+                {addresses.map((addressItem, i) => (
+                    <tr
+                        key={addressItem.id}
+                        className={hightlightedIndex === i ? 'bg-[#a6ff93]' : ''}
+                    >
                         <td>
                             {addressItem.address}
                         </td>
