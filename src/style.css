@@ -16,23 +16,12 @@
 	color: #3ba52a;
 	resize: vertical;
 	z-index: 99999;
-	padding: 20px;
 	font-family: monospace;
 	font-size: 10px;
-	overflow: auto;
 }
 
-.KKSearchUI__table {
-	width: 100%;
-}
-
-.KKSearchUI__table td {
-	padding: 3px;
-	border: 1px solid white;
-}
-
-.KKSearchUI__table td:first-child {
-	width: 100%;
+.KKSearchUI * {
+	box-sizing: border-box;
 }
 
 .KKSearchUIBtn {

@@ -87,47 +87,54 @@ export const MainTable = ({
     }
 
 	return (
-        <>
-            <button onClick={back} className="KKSearchUIBtn">
-                ^
-            </button>
+        <div className="h-full">
+            <div className="absolute">
+                <button onClick={back} className="KKSearchUIBtn">
+                    ^
+                </button>
 
-            <button onClick={() => setAutoSearch(!autoSearch)} className="KKSearchUIBtn">
-                {!autoSearch ? 'Start auto search' : 'Stop auto search'}
-            </button>
+                <button
+                    onClick={() => setAutoSearch(!autoSearch)} className="KKSearchUIBtn"
+                >
+                    {!autoSearch ? 'Start auto search' : 'Stop auto search'}
+                </button>
+            </div>
 
-            <table class="KKSearchUI__table">
-                {addresses.map((addressItem, i) => (
-                    <tr
-                        key={addressItem.id}
-                        className={hightlightedIndex === i ? 'bg-[#a6ff93]' : ''}
-                    >
-                        <td>
-                            {addressItem.address}
-                        </td>
-                        <td>
-                            <div class="flex gap-1">
-                                <button
-                                    class="KKSearchUIBtn js-KKSearchUI-search-one"
-                                    onClick={() => searchOne(addressItem)}
-                                >
-                                    Search
-                                </button>
+            <div className="overflow-y-auto h-full">
+                <table class="w-full">
+                    {addresses.map((addressItem, i) => (
+                        <tr
+                            key={addressItem.id}
+                            className={hightlightedIndex === i ? 'bg-[#a6ff93]' : ''}
+                        >
+                            <td className="p-[3px] border border-white border-solid w-full">
+                                {addressItem.address}
+                            </td>
+                            <td className="p-[3px] border border-white border-solid">
+                                <div class="flex gap-1">
+                                    <button
+                                        class="KKSearchUIBtn js-KKSearchUI-search-one"
+                                        onClick={() => searchOne(addressItem)}
+                                    >
+                                        Search
+                                    </button>
 
-                                <button
-                                    class="KKSearchUIBtn js-KKSearchUI-search-one"
-                                    onClick={() => saveCoords(addressItem.id)}
-                                >
-                                    Use current coords
-                                </button>
-                            </div>
-                        </td>
-                        <td>
-                            {addressItem.coords}
-                        </td>
-                    </tr>
-                ))}
-            </table>
-        </>
+                                    <button
+                                        class="KKSearchUIBtn js-KKSearchUI-search-one"
+                                        onClick={() => saveCoords(addressItem.id)}
+                                    >
+                                        Use current coords
+                                    </button>
+                                </div>
+                            </td>
+                            <td className="p-[3px] border border-white">
+                                {addressItem.coords}
+                            </td>
+                        </tr>
+                    ))}
+                </table>
+            </div>
+
+        </div>
     )
 }
