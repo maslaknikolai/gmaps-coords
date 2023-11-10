@@ -20,10 +20,6 @@
 	font-size: 10px;
 }
 
-.KKSearchUI * {
-	box-sizing: border-box;
-}
-
 .KKSearchUIBtn {
 	border-radius: 0;
 	font-family: monospace;
