@@ -9,10 +9,6 @@ import { getCurrentCoordinates } from "./utils/getCurrentCoordinates";
 import { searchGoogleMapsAddress } from "./utils/searchGoogleMapsAddress";
 import { downloadCSV } from "./utils/downloadCSV";
 
-function sleep(ms: number) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
-
 export const MainTable = ({
     addresses,
     back,
@@ -29,72 +25,87 @@ export const MainTable = ({
         }))
     }
 
+    const [isSearchInProgress, setIsSearchInProgress] = useState(false)
     const rowRefs = useRef(addresses.map(() => createRef()));
     const [hightlightedIndex, setHightlightedIndex] = useState(-1)
     const [autoSearch, setAutoSearch] = useState(false)
-    const lastAutoSearchedIndex = useRef(-1)
+    const queue = useRef<AddressItem[]>([])
+    const processing = useRef(false)
 
-    const preformAutoSearch = async () => {
-        const nextAddressesWithNoCoordsIndex = addresses.findIndex((it, i) => !it.coords && i > lastAutoSearchedIndex.current)
+    useEffect(() => { // sync search state
+        const trigger = document.getElementById('omnibox-singlebox');
+        const interval = setInterval(() => {
+            setIsSearchInProgress(!!trigger.className)
+        }, 100)
 
-        if (nextAddressesWithNoCoordsIndex === -1) {
-            setAutoSearch(false)
-            return
+        return () => clearInterval(interval)
+    }, [])
+
+    useEffect(() => { // process queue
+        function createInterval() {
+            const interval = setInterval(() => {
+                if (isSearchInProgress || queue.current.length === 0 || processing.current) {
+                    return
+                }
+                processing.current = true;
+
+                const first = queue.current.shift();
+                const index = addresses.findIndex(it => it.id === first.id)
+
+                scrollToRow(index)
+                setHightlightedIndex(index)
+
+                searchGoogleMapsAddress(first.address)
+                    .then(() => {
+                        const coords = getCurrentCoordinates()
+                        if (!coords) return;
+                        saveCoords(first.id)
+                    })
+                    .finally(() => {
+                        processing.current = false
+                    })
+
+                function scrollToRow(index: number) {
+                    rowRefs.current[index]?.current.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'nearest'
+                    });
+                }
+            }, 10)
+
+            return interval
         }
 
-        const itemToSearch = addresses[nextAddressesWithNoCoordsIndex]
-        lastAutoSearchedIndex.current = nextAddressesWithNoCoordsIndex
-        setHightlightedIndex(nextAddressesWithNoCoordsIndex)
+        const interval = createInterval()
+        return () => clearInterval(interval)
+    }, [isSearchInProgress, queue, processing, addresses, setHightlightedIndex])
 
-        if (rowRefs.current[nextAddressesWithNoCoordsIndex]) {
-            rowRefs.current[nextAddressesWithNoCoordsIndex].current.scrollIntoView({
-                behavior: 'smooth',
-                block: 'nearest'
-            });
-        }
+    function startAutoSearch() {
+        setAutoSearch(true)
 
-        scrollToRow(nextAddressesWithNoCoordsIndex)
-        searchGoogleMapsAddress(itemToSearch.address)
+        const afterHighlighted = addresses.slice(hightlightedIndex + 1).filter(it => !it.coords)
+        const beforeHighlighted = addresses.slice(0, hightlightedIndex + 1).filter(it => !it.coords)
+        const newQueue = [...afterHighlighted, ...beforeHighlighted]
 
-        await sleep(2000)
-
-        const coords = getCurrentCoordinates()
-
-        if (!coords) {
-            return
-        };
-
-        saveCoords(itemToSearch.id)
+        queue.current = newQueue
     }
 
-    function scrollToRow(index: number) {
-        rowRefs.current[index]?.current.scrollIntoView({
-            behavior: 'smooth',
-            block: 'nearest'
-        });
+    function stopAutosearch() {
+        setAutoSearch(false)
+        queue.current = []
     }
 
-    useEffect(() => {
-        if (!autoSearch) {
-            setHightlightedIndex(-1);
-            lastAutoSearchedIndex.current = -1
-            return
-        };
-
-        preformAutoSearch()
-        const interval = setInterval(preformAutoSearch, 4000)
-
-        return () => {
-            clearInterval(interval)
+    function toggleAutosearch() {
+        if (autoSearch) {
+            stopAutosearch()
+        } else {
+            startAutoSearch()
         }
-    }, [autoSearch])
+    }
 
     async function searchOne(addressItem: AddressItem) {
-        setAutoSearch(false)
-        await sleep(1000)
-        const index = addresses.findIndex(it => it.id === addressItem.id)
-        setHightlightedIndex(index)
-        searchGoogleMapsAddress(addressItem.address)
+        stopAutosearch()
+        queue.current = [addressItem]
     }
 
     function download() {
@@ -156,7 +167,7 @@ export const MainTable = ({
                 </button>
 
                 <button
-                    onClick={() => setAutoSearch(!autoSearch)} className="KKSearchUIBtn inline-flex items-center w-full"
+                    onClick={toggleAutosearch} className="KKSearchUIBtn inline-flex items-center w-full"
                 >
                     {!autoSearch ? (
                         <>
