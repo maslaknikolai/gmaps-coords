@@ -136,14 +136,14 @@ export const MainTable = ({
                             <td className="p-[3px] border border-white border-solid">
                                 <div class="flex gap-1">
                                     <button
-                                        class="KKSearchUIBtn js-KKSearchUI-searchGoogleMapsAddress-one"
+                                        class="KKSearchUIBtn"
                                         onClick={() => searchOne(addressItem)}
                                     >
                                         Search
                                     </button>
 
                                     <button
-                                        class="KKSearchUIBtn js-KKSearchUI-search-one"
+                                        class="KKSearchUIBtn"
                                         onClick={() => saveCoords(addressItem.id)}
                                     >
                                         Use current coords
