@@ -2,24 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-.id-app-container {
-	height: 60% !important;
-}
-
-.KKSearchUI {
-	position: fixed;
-	bottom: 0;
-	left: 0;
-	right: 0;
-	height: 40%;
-	background: #333;
-	color: #3ba52a;
-	resize: vertical;
-	z-index: 99999;
-	font-family: monospace;
-	font-size: 10px;
-}
-
 .KKSearchUIBtn {
 	border-radius: 0;
 	font-family: monospace;
