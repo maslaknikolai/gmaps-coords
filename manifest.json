@@ -1,6 +1,6 @@
 {
     "name": "GMAPS Coords",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "description": "Helps to search coordinates in Google Maps",
     "author": "Nikolai Maslak",
     "manifest_version": 3,
