@@ -8,6 +8,7 @@ import { createRef } from "preact";
 import { getCurrentCoordinates } from "./utils/getCurrentCoordinates";
 import { searchGoogleMapsAddress } from "./utils/searchGoogleMapsAddress";
 import { downloadCSV } from "./utils/downloadCSV";
+import { createSearchStateProvider } from "./searchStateProvider";
 
 export const MainTable = ({
     addresses,
@@ -33,13 +34,10 @@ export const MainTable = ({
     const processing = useRef(false)
 
     useEffect(() => { // sync search state
-        const trigger = document.getElementById('omnibox-singlebox');
-        const interval = setInterval(() => {
-            setIsSearchInProgress(!!trigger.className)
-        }, 100)
-
-        return () => clearInterval(interval)
-    }, [])
+        const searchStateProvider = createSearchStateProvider()
+        searchStateProvider.onChange(setIsSearchInProgress)
+        return searchStateProvider.destroy
+    }, [setIsSearchInProgress])
 
     useEffect(() => { // process queue
         function createInterval() {

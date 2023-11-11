@@ -1,31 +1,19 @@
+import { createSearchStateProvider } from "../searchStateProvider";
 import { sleep } from "./sleep";
 
 export async function searchGoogleMapsAddress(address: string) {
+    const searchStateProvider = createSearchStateProvider()
+
     const f = document.querySelector<HTMLInputElement>('#searchboxinput')
     const b = document.querySelector<HTMLButtonElement>('#searchbox-searchbutton')
 
     f.value = address;
     b.click();
 
-    await waitTillSearchEnd()
-}
+    await searchStateProvider.onSearchStart()
+    await searchStateProvider.onSearchEnd()
 
-async function waitTillSearchEnd() {
-    const trigger = document.getElementById('omnibox-singlebox');
+    await sleep(300)
 
-    await waitClassChange(true)
-    await waitClassChange(false)
-
-    await sleep(300) // wait for render content
-
-    function waitClassChange(shouldHasClass: boolean) {
-        return new Promise<void>(resolve => {
-            const interval = setInterval(() => {
-                const passed = shouldHasClass ? trigger.className : !trigger.className
-                if (!passed) return;
-                clearInterval(interval)
-                resolve()
-            }, 100)
-        })
-    }
+    searchStateProvider.destroy()
 }
